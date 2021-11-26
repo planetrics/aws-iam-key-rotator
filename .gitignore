@@ -38,3 +38,4 @@ __pycache__
 header.tf
 creator.zip
 destructor.zip
+.DS_Store

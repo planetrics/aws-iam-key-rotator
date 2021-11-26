@@ -96,7 +96,7 @@ def fetch_user_details():
                 users.pop(userName)
             else:
                 users[userName]['attributes'] = userAttributes
-        logger.info('User with notification enabled: {}'.format([user for user in users]))
+        logger.info('Users with notification enabled: {}'.format([user for user in users]))
 
         logger.info('Fetching keys for users individually')
         with concurrent.futures.ThreadPoolExecutor(10) as executor:
@@ -128,7 +128,7 @@ def send_email(email, userName, accessKey, secretKey, existingAccessKey):
 def notify_via_slack(slackUrl, userName, existingAccessKey, accessKey, secretKey):
     try:
         import slack
-        slack.notify(slackUrl, userName, existingAccessKey, accessKey, secretKey)
+        slack.notify(slackUrl, userName, existingAccessKey, accessKey, secretKey, DAYS_FOR_DELETION)
     except (Exception, ClientError) as ce:
         logger.error('Failed to notify user {} via slack. Reason: {}'.format(userName, ce))
 
@@ -211,8 +211,6 @@ def create_user_keys(users):
 def handler(event, context):
     if IAM_KEY_ROTATOR_TABLE is None:
         logger.error('IAM_KEY_ROTATOR_TABLE is required. Current value: {}'.format(IAM_KEY_ROTATOR_TABLE))
-    elif MAIL_FROM is None:
-        logger.error('MAIL_FROM is required. Current value: {}'.format(MAIL_FROM))
     else:
         users = fetch_user_details()
         create_user_keys(users)

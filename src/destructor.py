@@ -107,7 +107,5 @@ def destroy_user_keys(records):
 def handler(event, context):
     if IAM_KEY_ROTATOR_TABLE is None:
         logger.error('IAM_KEY_ROTATOR_TABLE is required. Current value: {}'.format(IAM_KEY_ROTATOR_TABLE))
-    elif MAIL_FROM is None:
-        logger.error('MAIL_FROM is required. Current value: {}'.format(MAIL_FROM))
     else:
         destroy_user_keys(event['Records'])

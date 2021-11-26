@@ -14,6 +14,10 @@ data "template_file" "mailgun_mailer" {
   template = file("../src/mailgun_mailer.py")
 }
 
+data "template_file" "slack" {
+  template = file("../src/slack.py")
+}
+
 data "archive_file" "creator" {
   type        = "zip"
   output_path = "${path.module}/creator.zip"
@@ -28,6 +32,10 @@ data "archive_file" "creator" {
   source {
     content  = data.template_file.mailgun_mailer.rendered
     filename = "mailgun_mailer.py"
+  }
+  source {
+    content  = data.template_file.slack.rendered
+    filename = "slack.py"
   }
 }
 
@@ -45,5 +53,9 @@ data "archive_file" "destructor" {
   source {
     content  = data.template_file.mailgun_mailer.rendered
     filename = "mailgun_mailer.py"
+  }
+  source {
+    content  = data.template_file.slack.rendered
+    filename = "slack.py"
   }
 }
