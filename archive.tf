@@ -1,21 +1,21 @@
 data "template_file" "creator" {
-  template = file("../src/creator.py")
+  template = file("src/creator.py")
 }
 
 data "template_file" "destructor" {
-  template = file("../src/destructor.py")
+  template = file("src/destructor.py")
 }
 
 data "template_file" "ses_mailer" {
-  template = file("../src/ses_mailer.py")
+  template = file("src/ses_mailer.py")
 }
 
 data "template_file" "mailgun_mailer" {
-  template = file("../src/mailgun_mailer.py")
+  template = file("src/mailgun_mailer.py")
 }
 
 data "template_file" "slack" {
-  template = file("../src/slack.py")
+  template = file("src/slack.py")
 }
 
 data "archive_file" "creator" {

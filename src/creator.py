@@ -8,13 +8,13 @@ from datetime import datetime, date
 from botocore.exceptions import ClientError
 
 # No. of days to wait before existing key pair is deleted once a new key pair is generated
-DAYS_FOR_DELETION = os.environ.get('DAYS_FOR_DELETION', 5)
+DAYS_FOR_DELETION = os.environ.get('DAYS_FOR_DELETION', 10)
 
 # Table name which holds existing access key pair details to be deleted
 IAM_KEY_ROTATOR_TABLE = os.environ.get('IAM_KEY_ROTATOR_TABLE', None)
 
 # Days after which a new access key pair should be generated
-ACCESS_KEY_AGE = os.environ.get('ACCESS_KEY_AGE', 85)
+ACCESS_KEY_AGE = os.environ.get('ACCESS_KEY_AGE', 80)
 
 # Mail client to use for sending new key creation or existing key deletion mail
 MAIL_CLIENT = os.environ.get('MAIL_CLIENT', 'ses')

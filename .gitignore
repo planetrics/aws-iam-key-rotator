@@ -33,7 +33,6 @@ override.tf.json
 terraform.rc
 
 __pycache__
-*.json
 *.sh
 header.tf
 creator.zip
