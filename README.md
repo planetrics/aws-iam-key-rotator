@@ -27,7 +27,10 @@ This tool is responsible for generating a new IAM access key pair every X days a
 ### Setup:
 - Use the [terraform module](terraform) included in this repo to create all the AWS resources required to automate IAM key rotation
 - Add following tags to the IAM user whose access keys needs to be automated. All the tags mentioned are case-insensitive:
-  - `ROTATE_AFTER_DAYS`: After how many days access key should be rotated
-  - `NOTIFICATION_CHANNEL`: Channel to use for notifying user about access key change. Supported Values: `email` and `slack`
-  - `EMAIL`: Email address to which alerts related to access keys needs to be sent. **Note:** Required only if channel is set to `email`
-  - `SLACK_URL`: Slack incoming webhook url to use for notification. **Note:** Required only if channel is set to `slack`
+  - **Required:**
+    - `NOTIFICATION_CHANNEL`: Channel to use for notifying user about access key change. Supported Values: `email` and `slack`
+  - **Optional:**
+    - `ROTATE_AFTER_DAYS`: After how many days access key should be rotated. If not set `ACCESS_KEY_AGE` environment variable will be used for key rotation
+    - `EMAIL`: Email address to which alerts about access key needs to be sent. **Note:** Required if channel is set to `email`
+    - `SLACK_URL`: Slack incoming webhook url to use for notification. **Note:** Required if channel is set to `slack`
+    - `INSTRUCTION_0`: Add help instruction about updating access key. This instruction will be sent whenever a new key pair is generated via selected medium. **Note:** As AWS restricts [tag value](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html#tag-conventions) to 256 characters you can use multiple instruction tags by increasing the number (INSTRUCTION_0, INSTRUCTION_1 , INSTRUCTION_2 and so on). All the instruction tags value will be combined and sent as a single string to the user
