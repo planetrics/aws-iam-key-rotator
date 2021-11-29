@@ -29,10 +29,6 @@ def notify(url, userName, existingAccessKey, accessKey=None, secretKey=None, ins
                         {
                             "type": "mrkdwn",
                             "text": "*Secret Key:*\n{}".format(secretKey)
-                        },
-                        {
-                            "type": "mrkdwn",
-                            "text": "*Instruction:*\n{}".format(instruction)
                         }
                     ]
                 },
