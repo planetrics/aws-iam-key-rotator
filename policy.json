@@ -1,0 +1,102 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "lambda:Get*",
+                "lambda:List*",
+                "lambda:AddPermission",
+                "lambda:CreateFunction",
+                "lambda:CreateEventSourceMapping",
+                "lambda:PublishLayerVersion",
+                "lambda:UpdateFunctionCode",
+                "lambda:UpdateEventSourceMapping",
+                "lambda:UpdateFunctionConfiguration",
+                "lambda:DeleteFunction",
+                "lambda:DeleteEventSourceMapping",
+                "lambda:DeleteLayerVersion",
+                "lambda:RemovePermission",
+                "lambda:TagResource",
+                "lambda:UntagResource"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "events:EnableRule",
+                "events:DescribeRule",
+                "events:ListRules",
+                "events:ListTargetsByRule",
+                "events:ListTagsForResource",
+                "events:PutRule",
+                "events:PutTargets",
+                "events:DisableRule",
+                "events:DeleteRule",
+                "events:RemoveTargets"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:ListTables",
+                "dynamodb:ListTagsOfResource",
+                "dynamodb:DescribeTable",
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:DescribeContinuousBackups",
+                "dynamodb:CreateTable",
+                "dynamodb:UpdateTimeToLive",
+                "dynamodb:UpdateTable",
+                "dynamodb:DeleteTable",
+                "dynamodb:TagResource",
+                "dynamodb:UntagResource"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iam:GetRolePolicy",
+                "iam:GetRole",
+                "iam:ListAttachedRolePolicies",
+                "iam:ListInstanceProfilesForRole",
+                "iam:ListRolePolicies",
+                "iam:ListRoleTags",
+                "iam:ListRoles",
+                "iam:CreateRole",
+                "iam:PutRolePolicy",
+                "iam:AttachRolePolicy",
+                "iam:DetachRolePolicy",
+                "iam:TagRole",
+                "iam:UntagRole",
+                "iam:UpdateRoleDescription",
+                "iam:UpdateAssumeRolePolicy",
+                "iam:UpdateRole",
+                "iam:DeleteRole",
+                "iam:DeleteRolePolicy"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iam:PassRole"
+            ],
+            "Resource": [
+                "arn:aws:iam::ACCOUNT_ID:role/planetview-ENV-iam-key-creator",
+                "arn:aws:iam::ACCOUNT_ID:role/planetview-ENV-iam-key-destructor"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ssm:GetParameter",
+                "ssm:DeleteParameter",
+                "ssm:PutParameter"
+            ],
+            "Resource": "*"
+        }
+    ]
+}

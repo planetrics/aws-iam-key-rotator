@@ -1,17 +1,21 @@
 data "template_file" "creator" {
-  template = file("../src/creator.py")
+  template = file("src/creator.py")
 }
 
 data "template_file" "destructor" {
-  template = file("../src/destructor.py")
+  template = file("src/destructor.py")
 }
 
 data "template_file" "ses_mailer" {
-  template = file("../src/ses_mailer.py")
+  template = file("src/ses_mailer.py")
 }
 
 data "template_file" "mailgun_mailer" {
-  template = file("../src/mailgun_mailer.py")
+  template = file("src/mailgun_mailer.py")
+}
+
+data "template_file" "slack" {
+  template = file("src/slack.py")
 }
 
 data "archive_file" "creator" {
@@ -29,6 +33,10 @@ data "archive_file" "creator" {
     content  = data.template_file.mailgun_mailer.rendered
     filename = "mailgun_mailer.py"
   }
+  source {
+    content  = data.template_file.slack.rendered
+    filename = "slack.py"
+  }
 }
 
 data "archive_file" "destructor" {
@@ -45,5 +53,9 @@ data "archive_file" "destructor" {
   source {
     content  = data.template_file.mailgun_mailer.rendered
     filename = "mailgun_mailer.py"
+  }
+  source {
+    content  = data.template_file.slack.rendered
+    filename = "slack.py"
   }
 }
