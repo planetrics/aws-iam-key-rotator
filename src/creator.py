@@ -142,7 +142,7 @@ def send_email(email, userName, accessKey, secretKey, instruction, existingAcces
 def notify_via_slack(slackUrl, userName, existingAccessKey, accessKey, secretKey, instruction):
     try:
         import slack
-        slack.notify(slackUrl, userName, existingAccessKey, accessKey, secretKey, DAYS_FOR_DELETION)
+        slack.notify(slackUrl, userName, existingAccessKey, accessKey, secretKey, instruction, DAYS_FOR_DELETION)
     except (Exception, ClientError) as ce:
         logger.error('Failed to notify user {} via slack. Reason: {}'.format(userName, ce))
 

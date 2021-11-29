@@ -6,7 +6,7 @@ import requests
 logger = logging.getLogger('slack')
 logger.setLevel(logging.INFO)
 
-def notify(url, userName, existingAccessKey, accessKey=None, secretKey=None, deleteAfterDays=None):
+def notify(url, userName, existingAccessKey, accessKey=None, secretKey=None, instruction=None, deleteAfterDays=None):
     if accessKey is not None:
         # New key pair generated
         logger.info('Sending notification to {} about new access key generation via {}'.format(userName, url))
@@ -29,8 +29,19 @@ def notify(url, userName, existingAccessKey, accessKey=None, secretKey=None, del
                         {
                             "type": "mrkdwn",
                             "text": "*Secret Key:*\n{}".format(secretKey)
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Instruction:*\n{}".format(instruction)
                         }
                     ]
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*Instruction:* {}".format(instruction)
+                    }
                 },
                 {
                   "type": "divider"
