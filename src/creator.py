@@ -29,6 +29,11 @@ dynamodb = boto3.client('dynamodb', region_name=os.environ.get('AWS_REGION'))
 logger = logging.getLogger('creator')
 logger.setLevel(logging.INFO)
 
+def prepare_instruction(keyUpdateInstructions):
+    sortedKeys = sorted(keyUpdateInstructions)
+    preparedInstruction = [keyUpdateInstructions[k] for k in sortedKeys]
+    return ' '.join(preparedInstruction)
+
 def fetch_users_with_notification_enabled(user):
     logger.info('Fetching tags for {}'.format(user))
     resp = iam.list_user_tags(
@@ -36,6 +41,7 @@ def fetch_users_with_notification_enabled(user):
     )
 
     userAttributes = {}
+    keyUpdateInstructions = {}
     for t in resp['Tags']:
         if t['Key'].lower() == 'notification_channel':
             userAttributes['notification_channel'] = t['Value']
@@ -48,6 +54,14 @@ def fetch_users_with_notification_enabled(user):
 
         if t['Key'].lower() == 'rotate_after_days':
             userAttributes['rotate_after'] = t['Value']
+
+        if t['Key'].lower().startswith('instruction_'):
+            keyUpdateInstructions[int(t['Key'].split('_')[1])] = t['Value']
+
+    if len(keyUpdateInstructions) > 0:
+        userAttributes['instruction'] = prepare_instruction(keyUpdateInstructions)
+    else:
+        userAttributes['instruction'] = ''
 
     if 'notification_channel' in userAttributes:
         return True, user, userAttributes
@@ -110,8 +124,8 @@ def fetch_user_details():
 
     return users
 
-def send_email(email, userName, accessKey, secretKey, existingAccessKey):
-    mailBody = '<html><head><title>{}</title></head><body>Hey &#x1F44B; {},<br/><br/>A new access key pair has been generated for you. Please update the same wherever necessary.<br/><br/>Access Key: <strong>{}</strong><br/>Secret Access Key: <strong>{}</strong><br/><br/><strong>Note:</strong> Existing key pair <strong>{}</strong> will be deleted after {} days so please update the new key pair wherever required.<br/><br/>Thanks,<br/>Your Security Team</body></html>'.format('New Access Key Pair', userName, accessKey, secretKey, existingAccessKey, DAYS_FOR_DELETION)
+def send_email(email, userName, accessKey, secretKey, instruction, existingAccessKey):
+    mailBody = '<html><head><title>{}</title></head><body>Hey &#x1F44B; {},<br/><br/>A new access key pair has been generated for you. Please update the same wherever necessary.<br/><br/>Access Key: <strong>{}</strong><br/>Secret Access Key: <strong>{}</strong><br/>Instruction: {}<br/><br/><strong>Note:</strong> Existing key pair <strong>{}</strong> will be deleted after {} days so please update the new key pair wherever required.<br/><br/>Thanks,<br/>Your Security Team</body></html>'.format('New Access Key Pair', userName, accessKey, secretKey, instruction, existingAccessKey, DAYS_FOR_DELETION)
     try:
         logger.info('Using {} as mail client'.format(MAIL_CLIENT))
         if MAIL_CLIENT == 'ses':
@@ -125,7 +139,7 @@ def send_email(email, userName, accessKey, secretKey, existingAccessKey):
     except (Exception, ClientError) as ce:
         logger.error('Failed to send mail to user {} ({}). Reason: {}'.format(userName, email, ce))
 
-def notify_via_slack(slackUrl, userName, existingAccessKey, accessKey, secretKey):
+def notify_via_slack(slackUrl, userName, existingAccessKey, accessKey, secretKey, instruction):
     try:
         import slack
         slack.notify(slackUrl, userName, existingAccessKey, accessKey, secretKey, DAYS_FOR_DELETION)
@@ -166,7 +180,7 @@ def notify_user(user, userName, accessKey, secretKey):
         if 'email' not in user['attributes']:
             logger.error('Email is missing for user {}'.format(userName))
         else:
-            send_email(user['attributes']['email'], userName, accessKey, secretKey, user['keys'][0]['ak'])
+            send_email(user['attributes']['email'], userName, accessKey, secretKey, user['attributes']['instruction'], user['keys'][0]['ak'])
 
             # Mark exisiting key to destory after X days
             mark_key_for_destroy(userName, user['keys'][0]['ak'], 'email', user['attributes']['email'])
@@ -174,7 +188,7 @@ def notify_user(user, userName, accessKey, secretKey):
         if 'slack_url' not in user['attributes']:
             logger.error('Slack incoming webhook url is missing for user {}'.format(userName))
         else:
-            notify_via_slack(user['attributes']['slack_url'], userName, user['keys'][0]['ak'], accessKey, secretKey)
+            notify_via_slack(user['attributes']['slack_url'], userName, user['keys'][0]['ak'], accessKey, secretKey, user['attributes']['instruction'])
 
             # Mark exisiting key to destory after X days
             mark_key_for_destroy(userName, user['keys'][0]['ak'], 'slack', user['attributes']['slack_url'])
