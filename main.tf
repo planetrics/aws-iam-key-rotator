@@ -162,6 +162,7 @@ resource "aws_ssm_parameter" "mailgun" {
   type  = "SecureString"
   tags  = var.tags
 }
+
 resource "aws_lambda_function" "iam_key_creator" {
   # checkov:skip=CKV_AWS_50: Enabling X-Ray tracing depends on user
   # checkov:skip=CKV_AWS_115: Setting reserved concurrent execution depends on user

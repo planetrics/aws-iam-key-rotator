@@ -6,19 +6,34 @@
             "Action": [
                 "lambda:Get*",
                 "lambda:List*",
+                "lambda:*EventSourceMapping"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
                 "lambda:AddPermission",
                 "lambda:CreateFunction",
-                "lambda:CreateEventSourceMapping",
                 "lambda:PublishLayerVersion",
                 "lambda:UpdateFunctionCode",
-                "lambda:UpdateEventSourceMapping",
                 "lambda:UpdateFunctionConfiguration",
                 "lambda:DeleteFunction",
-                "lambda:DeleteEventSourceMapping",
                 "lambda:DeleteLayerVersion",
                 "lambda:RemovePermission",
                 "lambda:TagResource",
                 "lambda:UntagResource"
+            ],
+            "Resource": [
+                "arn:aws:lambda:eu-west-1:ACCOUNT_ID:function:planetview-ENV-iam-key-creator",
+                "arn:aws:lambda:eu-west-1:ACCOUNT_ID:function:planetview-ENV-iam-key-destructor",
+                "arn:aws:lambda:eu-west-1:ACCOUNT_ID:layer:*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "events:ListRules"
             ],
             "Resource": "*"
         },
@@ -27,7 +42,6 @@
             "Action": [
                 "events:EnableRule",
                 "events:DescribeRule",
-                "events:ListRules",
                 "events:ListTargetsByRule",
                 "events:ListTagsForResource",
                 "events:PutRule",
@@ -36,12 +50,18 @@
                 "events:DeleteRule",
                 "events:RemoveTargets"
             ],
+            "Resource": "arn:aws:events:eu-west-1:ACCOUNT_ID:rule/IAMAccessKeyCreator"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:ListTables"
+            ],
             "Resource": "*"
         },
         {
             "Effect": "Allow",
             "Action": [
-                "dynamodb:ListTables",
                 "dynamodb:ListTagsOfResource",
                 "dynamodb:DescribeTable",
                 "dynamodb:DescribeTimeToLive",
@@ -52,6 +72,15 @@
                 "dynamodb:DeleteTable",
                 "dynamodb:TagResource",
                 "dynamodb:UntagResource"
+            ],
+            "Resource": [
+                "arn:aws:dynamodb:eu-west-1:ACCOUNT_ID:table/planetview-ENV-iam-key-rotator"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListRoles"
             ],
             "Resource": "*"
         },
@@ -64,7 +93,6 @@
                 "iam:ListInstanceProfilesForRole",
                 "iam:ListRolePolicies",
                 "iam:ListRoleTags",
-                "iam:ListRoles",
                 "iam:CreateRole",
                 "iam:PutRolePolicy",
                 "iam:AttachRolePolicy",
@@ -75,13 +103,7 @@
                 "iam:UpdateAssumeRolePolicy",
                 "iam:UpdateRole",
                 "iam:DeleteRole",
-                "iam:DeleteRolePolicy"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
+                "iam:DeleteRolePolicy",
                 "iam:PassRole"
             ],
             "Resource": [
@@ -96,7 +118,7 @@
                 "ssm:DeleteParameter",
                 "ssm:PutParameter"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:ssm:eu-west-1:ACCOUNT_ID:parameter/iakr/*"
         }
     ]
 }
