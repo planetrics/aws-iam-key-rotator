@@ -6,6 +6,10 @@ data "template_file" "destructor" {
   template = file("src/destructor.py")
 }
 
+data "template_file" "shared" {
+  template = file("src/shared.py")
+}
+
 data "template_file" "ses_mailer" {
   template = file("src/ses_mailer.py")
 }
@@ -24,6 +28,10 @@ data "archive_file" "creator" {
   source {
     content  = data.template_file.creator.rendered
     filename = "creator.py"
+  }
+  source {
+    content  = data.template_file.shared.rendered
+    filename = "shared.py"
   }
   source {
     content  = data.template_file.ses_mailer.rendered
@@ -45,6 +53,10 @@ data "archive_file" "destructor" {
   source {
     content  = data.template_file.destructor.rendered
     filename = "destructor.py"
+  }
+  source {
+    content  = data.template_file.shared.rendered
+    filename = "shared.py"
   }
   source {
     content  = data.template_file.ses_mailer.rendered

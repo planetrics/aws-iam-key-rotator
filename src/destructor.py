@@ -5,6 +5,9 @@ import concurrent.futures
 
 from botocore.exceptions import ClientError
 
+# Local import
+import shared
+
 # Table name which holds existing access key pair details to be deleted
 IAM_KEY_ROTATOR_TABLE = os.environ.get('IAM_KEY_ROTATOR_TABLE', None)
 
@@ -26,7 +29,9 @@ logger = logging.getLogger('destructor')
 logger.setLevel(logging.INFO)
 
 def send_email(email, userName, existingAccessKey):
-    mailBody = '<html><head><title>{}</title></head><body>Hey &#x1F44B; {},<br/><br/>An existing access key pair associated to your username has been deleted because it reached End-Of-Life. <br/><br/>Access Key: <strong>{}</strong><br/><br/>Thanks,<br/>Your Security Team</body></html>'.format('Old Access Key Pair Deleted', userName, existingAccessKey)
+    accountId = shared.fetch_account_info()['id']
+    accountName  = shared.fetch_account_info()['name']
+    mailBody = '<html><head><title>{}</title></head><body>Hey &#x1F44B; {},<br/><br/>An existing access key pair associated to your username has been deleted because it reached End-Of-Life. <br/><br/>Account: <strong>{} ({})</strong><br/>Access Key: <strong>{}</strong><br/><br/>Thanks,<br/>Your Security Team</body></html>'.format('Old Access Key Pair Deleted', userName, accountId, accountName, existingAccessKey)
     try:
         logger.info('Using {} as mail client'.format(MAIL_CLIENT))
         if MAIL_CLIENT == 'ses':
@@ -43,7 +48,7 @@ def send_email(email, userName, existingAccessKey):
 def notify_via_slack(slackUrl, userName, existingAccessKey):
     try:
         import slack
-        slack.notify(slackUrl, userName, existingAccessKey)
+        slack.notify(slackUrl, shared.fetch_account_info(), userName, existingAccessKey)
     except (Exception, ClientError) as ce:
         logger.error('Failed to notify user {} via slack. Reason: {}'.format(userName, ce))
 

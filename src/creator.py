@@ -7,6 +7,9 @@ import pytz
 from datetime import datetime, date
 from botocore.exceptions import ClientError
 
+# Local import
+import shared
+
 # No. of days to wait before existing key pair is deleted once a new key pair is generated
 DAYS_FOR_DELETION = os.environ.get('DAYS_FOR_DELETION', 10)
 
@@ -125,7 +128,9 @@ def fetch_user_details():
     return users
 
 def send_email(email, userName, accessKey, secretKey, instruction, existingAccessKey):
-    mailBody = '<html><head><title>{}</title></head><body>Hey &#x1F44B; {},<br/><br/>A new access key pair has been generated for you. Please update the same wherever necessary.<br/><br/>Access Key: <strong>{}</strong><br/>Secret Access Key: <strong>{}</strong><br/>Instruction: {}<br/><br/><strong>Note:</strong> Existing key pair <strong>{}</strong> will be deleted after {} days so please update the new key pair wherever required.<br/><br/>Thanks,<br/>Your Security Team</body></html>'.format('New Access Key Pair', userName, accessKey, secretKey, instruction, existingAccessKey, DAYS_FOR_DELETION)
+    accountId = shared.fetch_account_info()['id']
+    accountName  = shared.fetch_account_info()['name']
+    mailBody = '<html><head><title>{}</title></head><body>Hey &#x1F44B; {},<br/><br/>A new access key pair has been generated for you. Please update the same wherever necessary.<br/><br/>Account: <strong>{} ({})</strong><br/>Access Key: <strong>{}</strong><br/>Secret Access Key: <strong>{}</strong><br/>Instruction: {}<br/><br/><strong>Note:</strong> Existing key pair <strong>{}</strong> will be deleted after {} days so please update the new key pair wherever required.<br/><br/>Thanks,<br/>Your Security Team</body></html>'.format('New Access Key Pair', userName, accountId, accountName, accessKey, secretKey, instruction, existingAccessKey, DAYS_FOR_DELETION)
     try:
         logger.info('Using {} as mail client'.format(MAIL_CLIENT))
         if MAIL_CLIENT == 'ses':
@@ -142,7 +147,7 @@ def send_email(email, userName, accessKey, secretKey, instruction, existingAcces
 def notify_via_slack(slackUrl, userName, existingAccessKey, accessKey, secretKey, instruction):
     try:
         import slack
-        slack.notify(slackUrl, userName, existingAccessKey, accessKey, secretKey, instruction, DAYS_FOR_DELETION)
+        slack.notify(slackUrl, shared.fetch_account_info(), userName, existingAccessKey, accessKey, secretKey, instruction, DAYS_FOR_DELETION)
     except (Exception, ClientError) as ce:
         logger.error('Failed to notify user {} via slack. Reason: {}'.format(userName, ce))
 

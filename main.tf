@@ -97,6 +97,7 @@ resource "aws_iam_role_policy" "iam_key_creator_policy" {
           "iam:ListUserTags",
           "iam:ListAccessKeys",
           "iam:ListUsers",
+          "iam:ListAccountAliases",
           "iam:CreateAccessKey"
         ],
         "Effect": "Allow",
@@ -193,6 +194,7 @@ resource "aws_lambda_function" "iam_key_creator" {
       MAIL_FROM             = var.mail_from
       MAILGUN_API_URL       = var.mailgun_api_url
       MAILGUN_API_KEY_NAME  = var.mailgun_api_key == "" ? null : join(",", aws_ssm_parameter.mailgun.*.name)
+      AWS_ACCOUNT_ID        = local.account_id
     }
   }
 
@@ -217,7 +219,8 @@ resource "aws_iam_role_policy" "iam_key_destructor_policy" {
     "Statement": [
       {
         "Action": [
-          "iam:DeleteAccessKey"
+          "iam:DeleteAccessKey",
+          "iam:ListAccountAliases"
         ],
         "Effect": "Allow",
         "Resource": "*"
@@ -304,6 +307,7 @@ resource "aws_lambda_function" "iam_key_destructor" {
       MAIL_FROM             = var.mail_from
       MAILGUN_API_URL       = var.mailgun_api_url
       MAILGUN_API_KEY_NAME  = var.mailgun_api_key == "" ? null : join(",", aws_ssm_parameter.mailgun.*.name)
+      AWS_ACCOUNT_ID        = local.account_id
     }
   }
 

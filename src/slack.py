@@ -6,7 +6,7 @@ import requests
 logger = logging.getLogger('slack')
 logger.setLevel(logging.INFO)
 
-def notify(url, userName, existingAccessKey, accessKey=None, secretKey=None, instruction=None, deleteAfterDays=None):
+def notify(url, account, userName, existingAccessKey, accessKey=None, secretKey=None, instruction=None, deleteAfterDays=None):
     if accessKey is not None:
         # New key pair generated
         logger.info('Sending notification to {} about new access key generation via {}'.format(userName, url))
@@ -18,6 +18,19 @@ def notify(url, userName, existingAccessKey, accessKey=None, secretKey=None, ins
                         "type": "mrkdwn",
                         "text": ":mega: NEW KEY PAIR GENERATED FOR *{}* :mega:".format(userName)
                     }
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Account ID:*\n{}".format(account['id'])
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Account Name:*\n{}".format(account['name'])
+                        }
+                    ]
                 },
                 {
                     "type": "section",
@@ -62,6 +75,19 @@ def notify(url, userName, existingAccessKey, accessKey=None, secretKey=None, ins
                         "type": "mrkdwn",
                         "text": ":mega: OLD KEY PAIR DELETED :mega:".format(userName)
                     }
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Account ID:*\n{}".format(account['id'])
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Account Name:*\n{}".format(account['name'])
+                        }
+                    ]
                 },
                 {
                     "type": "section",
